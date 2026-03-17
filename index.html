@@ -56,42 +56,37 @@ h1{
 </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
-const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSLlP70oLCqn9XSuHiBI1fZtufwazh9qGrCSUw4f97gMoJI52Xsj0qa0FzCztnQOLz4RcorTFf6ouUW/pub?output=csv";
+const supabase = window.supabase.createClient(
+"https://ypmizhvosfiiearmvzyd.supabase.co",
+"sb_publishable_3ZRLsJcSR6TMZTJ6N61icw_2DyGzvWh"
+);
 
-function carregarPedidos(){
-fetch(url + "&t=" + new Date().getTime())
-.then(res => res.text())
-.then(data => {
+async function carregarPedidos(){
 
-const linhas = data.split("\n").slice(1);
+const { data, error } = await supabase
+.from("pedidos")
+.select("*");
+
+if(error){
+console.log(error);
+return;
+}
 
 let preparo = "";
 let pronto = "";
 
-linhas.forEach(linha => {
+data.forEach(p => {
 
-if(!linha) return;
-
-const colunas = linha.split(",");
-
-const pedido = colunas[0]?.trim();
-const nome = colunas[1]?.trim();
-const status = colunas[2]?.trim().toLowerCase();
-
-if(status === "preparo"){
-preparo += `
-<div class="numero preparo">
-${pedido} - ${nome}
-</div>`;
+if(p.status === "preparo"){
+preparo += `<div class="numero preparo">${p.pedido} - ${p.cliente}</div>`;
 }
 
-if(status === "pronto"){
-pronto += `
-<div class="numero pronto">
-${pedido} - ${nome}
-</div>`;
+if(p.status === "pronto"){
+pronto += `<div class="numero pronto">${p.pedido} - ${p.cliente}</div>`;
 }
 
 });
@@ -99,12 +94,10 @@ ${pedido} - ${nome}
 document.getElementById("preparo").innerHTML = preparo;
 document.getElementById("prontos").innerHTML = pronto;
 
-});
-
 }
 
 carregarPedidos();
-setInterval(carregarPedidos, 5000);
+setInterval(carregarPedidos, 3000);
 
 </script>
 
