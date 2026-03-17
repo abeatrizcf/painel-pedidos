@@ -91,29 +91,35 @@ h2{
 
 <script>
 
-const supabase = window.supabase.createClient(
+window.addEventListener("load", () => {
+
+const supabaseClient = window.supabase.createClient(
 "https://ypmizhvosfiiearmvzyd.supabase.co",
 "sb_publishable_3ZRLsJcSR6TMZTJ6N61icw_2DyGzvWh"
 );
 
 async function carregarPedidos(){
 
-const { data, error } = await supabase
+const { data, error } = await supabaseClient
 .from("pedidos")
 .select("*")
 .order("pedido",{ascending:true});
 
 if(error){
-console.log(error);
+console.log("Erro Supabase:", error);
 return;
 }
+
+console.log("Dados recebidos:", data);
 
 let preparo = "";
 let pronto = "";
 
+if(!data) return;
+
 data.forEach(p => {
 
-const status = p.status.toLowerCase();
+const status = (p.status || "").toLowerCase();
 
 if(status === "preparo"){
 
@@ -145,7 +151,10 @@ document.getElementById("prontos").innerHTML = pronto;
 }
 
 carregarPedidos();
+
 setInterval(carregarPedidos,3000);
+
+});
 
 </script>
 
