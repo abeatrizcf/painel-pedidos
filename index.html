@@ -2,38 +2,68 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Painel de Pedidos</title>
+<title>Noite do Pastel - Pedidos</title>
 
 <style>
 
 body{
-  background:black;
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle,#1e6bd6,#0b2d6b);
   color:white;
-  font-family:Arial;
   text-align:center;
 }
 
 h1{
-  font-size:60px;
+  font-size:70px;
+  margin-top:30px;
+  color:#ffd84d;
+  text-shadow:3px 3px 8px rgba(0,0,0,0.6);
 }
 
 .container{
   display:flex;
   justify-content:center;
-  gap:120px;
+  gap:80px;
+  margin-top:40px;
+}
+
+.coluna{
+  width:40%;
+}
+
+h2{
+  font-size:40px;
+  background:#ffd84d;
+  color:#1b3f91;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:20px;
 }
 
 .numero{
-  font-size:70px;
-  margin:10px;
+  font-size:60px;
+  margin:15px;
+  padding:20px;
+  border-radius:12px;
+  font-weight:bold;
 }
 
 .preparo{
-  color:yellow;
+  background:#ffc107;
+  color:#222;
+  box-shadow:0 0 15px rgba(255,193,7,0.8);
 }
 
 .pronto{
-  color:lime;
+  background:#28d17c;
+  color:white;
+  box-shadow:0 0 15px rgba(40,209,124,0.8);
+}
+
+.cliente{
+  font-size:25px;
+  display:block;
 }
 
 </style>
@@ -41,21 +71,22 @@ h1{
 
 <body>
 
-<h1>PEDIDOS</h1>
+<h1>🥟 NOITE DO PASTEL</h1>
 
 <div class="container">
 
-<div>
+<div class="coluna">
 <h2>EM PREPARO</h2>
 <div id="preparo"></div>
 </div>
 
-<div>
+<div class="coluna">
 <h2>PRONTOS</h2>
 <div id="prontos"></div>
 </div>
 
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -69,7 +100,8 @@ async function carregarPedidos(){
 
 const { data, error } = await supabase
 .from("pedidos")
-.select("*");
+.select("*")
+.order("pedido",{ascending:true});
 
 if(error){
 console.log(error);
@@ -81,12 +113,28 @@ let pronto = "";
 
 data.forEach(p => {
 
-if(p.status === "preparo"){
-preparo += `<div class="numero preparo">${p.pedido} - ${p.cliente}</div>`;
+const status = p.status.toLowerCase();
+
+if(status === "preparo"){
+
+preparo += `
+<div class="numero preparo">
+${p.pedido}
+<span class="cliente">${p.cliente}</span>
+</div>
+`;
+
 }
 
-if(p.status === "pronto"){
-pronto += `<div class="numero pronto">${p.pedido} - ${p.cliente}</div>`;
+if(status === "pronto"){
+
+pronto += `
+<div class="numero pronto">
+${p.pedido}
+<span class="cliente">${p.cliente}</span>
+</div>
+`;
+
 }
 
 });
@@ -97,7 +145,7 @@ document.getElementById("prontos").innerHTML = pronto;
 }
 
 carregarPedidos();
-setInterval(carregarPedidos, 3000);
+setInterval(carregarPedidos,3000);
 
 </script>
 
