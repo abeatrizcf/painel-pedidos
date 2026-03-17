@@ -61,8 +61,7 @@ h1{
 const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSLlP70oLCqn9XSuHiBI1fZtufwazh9qGrCSUw4f97gMoJI52Xsj0qa0FzCztnQOLz4RcorTFf6ouUW/pub?output=csv";
 
 function carregarPedidos(){
-
-fetch(url)
+fetch(url + "&t=" + new Date().getTime())
 .then(res => res.text())
 .then(data => {
 
